@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A\L Nest - Advanced Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Animation Container */
+        .animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a237e, #283593);
+            z-index: 1000;
+            transition: opacity 0.8s ease-out;
+            overflow: hidden;
+        }
+        
+        .animation-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+            opacity: 0.5;
+        }
+        
+        .animation-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .logo-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            perspective: 1000px;
+        }
+        
+        .letter {
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: white;
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(-100vh) rotateX(90deg);
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        
+        .letter.backslash {
+            font-size: 4.5rem;
+            line-height: 1;
+            margin: 0 -0.5rem;
+        }
+        
+        .letter.animate {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+        }
+        
+        .letter::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.7);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s ease 0.3s;
+        }
+        
+        .letter.animate::after {
+            transform: scaleX(1);
+        }
+        
+        .slogan {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: white;
+            margin-top: 1.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease 1.2s;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slogan.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.7s ease-in;
+            flex: 1;
+        }
+        
+        .main-content.visible {
+            opacity: 1;
+        }
+        
+        /* Header */
+        .header {
+            width: 100%;
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .header.scrolled {
+            padding: 1rem 0;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSI2MCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+            opacity: 0.3;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .header.scrolled .logo {
+            font-size: 1.5rem;
+        }
+        
+        .logo span {
+            margin: 0 0.2rem;
+        }
+        
+        .logo .backslash {
+            margin: 0 -0.3rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-link:hover {
+            color: white;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Calendar Styles */
+        .calendar-icon {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-icon:hover {
+            color: white;
+        }
+        
+        .calendar-tooltip {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            color: #1a237e;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 10;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .calendar-icon:hover .calendar-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(5px);
+        }
+        
+        /* Container */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap:1.5rem;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .box {
+            background: white;
+            color: #1a237e;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 500;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .box:hover, .box:focus {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            background: #f8fafc;
+        }
+        
+        .box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+        }
+        
+        .box-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .box-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .box:hover .box-icon {
+            transform: scale(1.1);
+        }
+        
+        /* Additional Sections */
+        .info-section {
+            max-width: 1200px;
+            width: 100%;
+            padding: 2rem;
+            margin: 2rem 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .info-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .info-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+        }
+        
+        .info-section p {
+            font-size: 1.1rem;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        /* Contributors Section */
+        .contributors {
+            max-width: 1200px;
+            width: 100%;
+            padding: 2rem;
+            text-align: center;
+            box-sizing: border-box;
+            background: white;
+            border-radius: 12px;
+            margin: 0 2rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .contributors:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contributors h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .contributors h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+        }
+        
+        .contributors p {
+            font-size: 1.1rem;
+            color: #4b5563;
+            margin: 0.5rem 0;
+        }
+        
+        /* Team Cards */
+        .team-cards {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .team-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 220px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .team-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 3px solid #1a237e;
+        }
+        
+        .team-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .team-card p {
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+        
+        .team-social {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        
+        .team-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            color: #1a237e;
+            transition: all 0.3s ease;
+        }
+        
+        .team-social a:hover {
+            background: #1a237e;
+            color: white;
+        }
+        
+        /* Contact Icon */
+        .contact-icon {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #1a237e);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(100px);
+            animation: slideIn 0.5s ease-out forwards;
+            animation-delay: 3.5s;
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-icon:hover, .contact-icon:focus {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #1a237e, #3b82f6);
+        }
+        
+        .contact-panel {
+            position: fixed;
+            bottom: 5.5rem;
+            right: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1rem;
+            opacity: 0;
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: all 0.3s ease;
+            z-index: 998;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            width: 220px;
+        }
+        
+        .contact-panel.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .contact-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .contact-option:hover, .contact-option:focus {
+            background: #f1f5f9;
+            color: #3b82f6;
+        }
+        
+        .contact-option i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 3rem 0 1.5rem;
+            margin-top: auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+            opacity: 0.3;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-logo span {
+            margin: 0 0.2rem;
+        }
+        
+        .footer-logo .backslash {
+            margin: 0 -0.3rem;
+        }
+        
+        .footer-about {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .footer-heading {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: white;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .footer-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-link:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .footer-link i {
+            font-size: 0.9rem;
+            width: 20px;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .footer-social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-social-link:hover {
+            background: white;
+            color: #1a237e;
+            transform: translateY(-3px);
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            width: 100%;
+            margin: 2rem auto 0;
+            padding: 1.5rem 2rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-copyright {
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-legal-links {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .footer-legal-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-legal-link:hover {
+            color: white;
+        }
+        
+        .version-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .version-button:hover {
+            background: #1a237e;
+            transform: translateY(-2px);
+        }
+        
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 5rem;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3b82f6, #1a237e);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 997;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 2rem auto;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a237e;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6, #1a237e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #4b5563;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            max-width: 1200px;
+            width: 100%;
+            padding: 2rem;
+            margin: 2rem auto;
+            text-align: center;
+        }
+        
+        .testimonials h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .testimonials h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+        }
+        
+        .testimonial-cards {
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+        
+        .testimonial-cards::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .testimonial-card {
+            min-width: 300px;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            scroll-snap-align: start;
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            color: #4b5563;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .testimonial-text::before,
+        .testimonial-text::after {
+            content: '"';
+            font-size: 2rem;
+            color: rgba(26, 35, 126, 0.2);
+            position: absolute;
+        }
+        
+        .testimonial-text::before {
+            top: -10px;
+            left: -10px;
+        }
+        
+        .testimonial-text::after {
+            bottom: -20px;
+            right: -10px;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .testimonial-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-info h4 {
+            font-size: 1.1rem;
+            color: #1a237e;
+            margin-bottom: 0.25rem;
+        }
+        
+        .author-info p {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .back-to-top {
+                right: 2rem;
+                bottom: 5.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .letter, .letter.backslash {
+                font-size: 3.5rem;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                padding: 1.5rem;
+            }
+            
+            .box {
+                height: 150px;
+                font-size: 1.1rem;
+            }
+            
+            .contact-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .contact-panel {
+                width: 200px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .footer-column {
+                margin-bottom: 1.5rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .letter, .letter.backslash {
+                font-size: 2.5rem;
+            }
+            
+            .slogan {
+                font-size: 1.2rem;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .info-section, .contributors {
+                padding: 1.5rem;
+                margin: 0 1rem 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .nav-link {
+                font-size: 0.9rem;
+            }
+            
+            .footer-legal-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .back-to-top {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                right: 1rem;
+                bottom: 5rem;
+            }
+        }
+        
+        /* Audio player for pronunciation */
+        .audio-player {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio element for pronunciation -->
+    <audio id="pronunciationAudio" class="audio-player">
+        <source src="https://www.myinstants.com/media/sounds/a-l-nest.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <div class="animation-container" id="animation" aria-hidden="true">
+        <div class="logo-container" role="presentation">
+            <span class="letter">A</span>
+            <span class="letter backslash">\</span>
+            <span class="letter">L</span>
+            <span class="letter"> </span>
+            <span class="letter">N</span>
+            <span class="letter">e</span>
+            <span class="letter">s</span>
+            <span class="letter">t</span>
+        </div>
+        <div class="slogan">Relive your dreams with us</div>
+    </div>
+    
+    <div class="main-content" id="mainContent" role="main">
+        <div class="header" id="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span>A</span>
+                    <span class="backslash">\</span>
+                    <span>L</span>
+                    <span> Nest</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#how-to-use" class="nav-link">How to Use</a>
+                    <a href="#privacy-policy" class="nav-link">Privacy Policy</a>
+                    <a href="#our-vision" class="nav-link">Our Vision</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                    <div class="calendar-icon" id="calendarIcon">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span class="calendar-tooltip" id="calendarTooltip"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="box" tabindex="0" role="button" aria-label="Science section" onclick="window.location.href='http://newweb1-iota.vercel.app'">
+                <div class="box-content">
+                    <i class="fas fa-flask box-icon text-blue-600"></i>
+                    Science
+                </div>
+            </div>
+            
+            <div class="box" tabindex="0" role="button" aria-label="Commerce section" onclick="window.location.href='http://newweb3-seven.vercel.app'">
+                <div class="box-content">
+                    <i class="fas fa-shopping-cart box-icon text-green-600"></i>
+                    Commerce
+                </div>
+            </div>
+            
+            <div class="box" tabindex="0" role="button" aria-label="Technology section" onclick="window.location.href='http://newweb2.vercel.app'">
+                <div class="box-content">
+                    <i class="fas fa-laptop-code box-icon text-purple-600"></i>
+                    Technology
+                </div>
+            </div>
+            
+            <div class="box" tabindex="0" role="button" aria-label="Arts section" onclick="window.location.href='http://newweb4-uwtv.vercel.app'">
+                <div class="box-content">
+                    <i class="fas fa-palette box-icon text-yellow-600"></i>
+                    Arts
+                </div>
+            </div>
+            
+            <div class="box" tabindex="0" role="button" aria-label="Others section" onclick="window.location.href='http://ppweb5-2.vercel.app'">
+                <div class="box-content">
+                    <i class="fas fa-graduation-cap box-icon text-red-600"></i>
+                    Others
+                </div>
+            </div>
+            
+            <div class="box" tabindex="0" role="button" aria-label="Check My Results section" onclick="window.location.href='https://www.doenets.lk/examresults'">
+                <div class="box-content">
+                    <i class="fas fa-award box-icon text-indigo-600"></i>
+                    Check My Results
+                </div>
+            </div>
+            
+            <div class="box" tabindex="0" role="button" aria-label="Advance Calculator section" onclick="window.location.href='https://calculator-hazel-nu-11.vercel.app/'">
+                <div class="box-content">
+                    <i class="fas fa-calculator box-icon text-teal-600"></i>
+                    Advance Calculator
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="studentsCount">0</div>
+                <div class="stat-label">Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="resourcesCount">0</div>
+                <div class="stat-label">Resources</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="subjectsCount">0</div>
+                <div class="stat-label">Subjects</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="successRate">0%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+        
+        <!-- How to Use Section -->
+        <div class="info-section" id="how-to-use">
+            <h2>How to Use A\L Nest</h2>
+            <p>Welcome to A\L Nest, your comprehensive learning platform. Here's how to make the most of our resources:</p>
+            <div class="mt-4 space-y-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
+                        <i class="fas fa-1"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-900">Select Your Stream</p>
+                        <p class="text-gray-600">Choose from Science, Commerce, Technology, Arts, or Other specialized subjects.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4">
+                        <i class="fas fa-2"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-900">Explore Resources</p>
+                        <p class="text-gray-600">Each stream provides curated study materials, past papers, and interactive learning tools.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
+                        <i class="fas fa-3"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-900">Track Progress</p>
+                        <p class="text-gray-600">Monitor your learning journey with our progress tracking features.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mr-4">
+                        <i class="fas fa-4"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-900">Check Results</p>
+                        <p class="text-gray-600">Access official exam results through our integrated portal.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 mr-4">
+                        <i class="fas fa-5"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-900">Get Support</p>
+                        <p class="text-gray-600">Use our contact options for any questions or assistance you may need.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Privacy Policy Section -->
+        <div class="info-section" id="privacy-policy">
+            <h2>Privacy Policy</h2>
+            <p>At A\L Nest, we take your privacy seriously. This policy outlines how we collect, use, and protect your information:</p>
+            
+            <div class="mt-6 space-y-6">
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100">
+                        <i class="fas fa-shield-alt text-blue-600 text-sm"></i>
+                    </div>
+                    <p class="font-medium text-gray-900">Information Collection</p>
+                    <p class="text-gray-600">We only collect necessary information to provide our services, such as basic account details and usage statistics.</p>
+                </div>
+                
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-green-100">
+                        <i class="fas fa-database text-green-600 text-sm"></i>
+                    </div>
+                    <p class="font-medium text-gray-900">Data Usage</p>
+                    <p class="text-gray-600">Your information is used solely to enhance your learning experience and improve our platform.</p>
+                </div>
+                
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-purple-100">
+                        <i class="fas fa-lock text-purple-600 text-sm"></i>
+                    </div>
+                    <p class="font-medium text-gray-900">Security</p>
+                    <p class="text-gray-600">We implement industry-standard security measures to protect your data from unauthorized access.</p>
+                </div>
+                
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-100">
+                        <i class="fas fa-users text-yellow-600 text-sm"></i>
+                    </div>
+                    <p class="font-medium text-gray-900">Third Parties</p>
+                    <p class="text-gray-600">We do not sell or share your personal information with third parties except as required by law.</p>
+                </div>
+                
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-red-100">
+                        <i class="fas fa-cookie text-red-600 text-sm"></i>
+                    </div>
+                    <p class="font-medium text-gray-900">Cookies</p>
+                    <p class="text-gray-600">Our site uses cookies to improve functionality and user experience, which you can manage in your browser settings.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Our Vision Section -->
+        <div class="info-section" id="our-vision">
+            <h2>Our Vision</h2>
+            <p>A\L Nest was founded with a clear vision: to democratize access to quality education for all Sri Lankan students preparing for their Advanced Level examinations.</p>
+            <p>We believe that every student deserves equal opportunities to excel, regardless of their location or economic background. Our platform brings together the best educational resources, expert guidance, and innovative learning tools in one accessible place.</p>
+            <p>Our mission is to transform the traditional learning experience by leveraging technology to create an engaging, personalized, and effective educational environment that helps students achieve their academic dreams.</p>
+            
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-blue-50 p-6 rounded-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="ml-4 font-semibold text-gray-900">Quality Education</h3>
+                    </div>
+                    <p class="text-gray-600">Providing high-quality, accessible education to all students across Sri Lanka.</p>
+                </div>
+                
+                <div class="bg-green-50 p-6 rounded-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3 class="ml-4 font-semibold text-gray-900">Innovation</h3>
+                    </div>
+                    <p class="text-gray-600">Leveraging technology to create innovative learning solutions.</p>
+                </div>
+                
+                <div class="bg-purple-50 p-6 rounded-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h3 class="ml-4 font-semibold text-gray-900">Accessibility</h3>
+                    </div>
+                    <p class="text-gray-600">Ensuring all students have equal access to educational resources.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Testimonials Section -->
+        <div class="testimonials">
+            <h2>What Our Students Say</h2>
+            <div class="testimonial-cards">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">A\L Nest transformed my study routine completely. The resources are comprehensive and easy to understand.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Nayana Perera">
+                        <div class="author-info">
+                            <h4>Nayana Perera</h4>
+                            <p>Science Student</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">The Commerce section helped me grasp difficult concepts through interactive examples. Highly recommended!</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Kamal Silva">
+                        <div class="author-info">
+                            <h4>Kamal Silva</h4>
+                            <p>Commerce Student</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">As an Arts student, I found the resources incredibly valuable. The platform is user-friendly and well-organized.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sanduni Fernando">
+                        <div class="author-info">
+                            <h4>Sanduni Fernando</h4>
+                            <p>Arts Student</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Section -->
+        <div class="info-section" id="contact">
+            <h2>Contact Us</h2>
+            <p>Have questions or need support? We're here to help!</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                <a href="mailto:contact@alnest.lk" class="contact-option" style="background: #f1f5f9; border-radius: 8px; padding: 1rem; text-decoration: none; color: #1a237e; transition: all 0.3s ease;">
+                    <i class="fas fa-envelope" style="color: #d44638;"></i>
+                    <span>Email Us</span>
+                </a>
+                <a href="https://outlook.office.com/mail/deeplink/compose?to=contact@alnest.lk" class="contact-option" style="background: #f1f5f9; border-radius: 8px; padding: 1rem; text-decoration: none; color: #1a237e; transition: all 0.3s ease;">
+                    <i class="fas fa-mail-bulk" style="color: #0072c6;"></i>
+                    <span>Outlook Us</span>
+                </a>
+                <a href="https://wa.me/+94761681904" class="contact-option" style="background: #f1f5f9; border-radius: 8px; padding: 1rem; text-decoration: none; color: #1a237e; transition: all 0.3s ease;">
+                    <i class="fab fa-whatsapp" style="color: #25D366;"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <a href="tel:+94772764500" class="contact-option" style="background: #f1f5f9; border-radius: 8px; padding: 1rem; text-decoration: none; color: #1a237e; transition: all 0.3s ease;">
+                    <i class="fas fa-phone" style="color: #34B7F1;"></i>
+                    <span>Call Us</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="contributors">
+            <h2>Our Team</h2>
+            <div class="team-cards">
+                <div class="team-card">
+                    <img src="https://randomuser.me/api/portraits/men/72.jpg" alt="Sathmin Sadheep">
+                    <h3>Sathmin Sadheep</h3>
+                    <p>Founder & Developer</p>
+                    <div class="team-social">
+                        <a href="https://www.facebook.com/share/16KpDnKNcQ/" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://github.com/Bozamk" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="https://new-project-s.vercel.app/" aria-label="Website"><i class="fas fa-globe"></i></a>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <img src="https://randomuser.me/api/portraits/women/19.jpg" alt="Sachini Nisansala">
+                    <h3>Sachini Nisansala</h3>
+                    <p>Content Specialist</p>
+                    <div class="team-social">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Website"><i class="fas fa-globe"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <div class="footer-logo">
+                    <span>A</span>
+                    <span class="backslash">\</span>
+                    <span>L</span>
+                    <span> Nest</span>
+                </div>
+                <p class="footer-about">
+                    A\L Nest is Sri Lanka's premier online learning platform for Advanced Level students, 
+                    offering comprehensive resources across all subject streams to help students achieve academic excellence.
+                </p>
+                <div class="footer-social">
+                    <a href="#" class="footer-social-link" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="footer-social-link" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="footer-social-link" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="footer-social-link" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="footer-social-link" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3 class="footer-heading">Quick Links</h3>
+                <div class="footer-links">
+                    <a href="#how-to-use" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> How to Use
+                    </a>
+                    <a href="#privacy-policy" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Privacy Policy
+                    </a>
+                    <a href="#our-vision" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Our Vision
+                    </a>
+                    <a href="#contact" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Contact Us
+                    </a>
+                    <a href="https://new-project-s.vercel.app/" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Official Website
+                    </a>
+                    <a href="#" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> FAQ
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3 class="footer-heading">Subjects</h3>
+                <div class="footer-links">
+                    <a href="http://newweb1-iota.vercel.app" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Science
+                    </a>
+                    <a href="http://newweb3-seven.vercel.app" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Commerce
+                    </a>
+                    <a href="http://newweb2.vercel.app" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Technology
+                    </a>
+                    <a href="http://newweb4-uwtv.vercel.app" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Arts
+                    </a>
+                    <a href="http://ppweb5-2.vercel.app" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Other Streams
+                    </a>
+                    <a href="https://calculator-hazel-nu-11.vercel.app/" class="footer-link">
+                        <i class="fas fa-chevron-right"></i> Advance Calculator
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p class="footer-copyright">© 2025 A\L Nest (Version 1.1). All Rights Reserved.</p>
+            <div class="footer-legal-links">
+                <a href="#" class="footer-legal-link">Terms of Service</a>
+                <a href="#" class="footer-legal-link">Privacy Policy</a>
+                <a href="#" class="footer-legal-link">Cookie Policy</a>
+                <a href="#" class="footer-legal-link">Sitemap</a>
+            </div>
+            <a href="https://al-nest.vercel.app/" class="version-button" aria-label="Visit Version 1.0">Visit Version 1.0</a>
+        </div>
+    </footer>
+    
+    <div class="contact-icon" tabindex="0" role="button" aria-label="Open contact options">
+        <i class="fas fa-headset"></i>
+    </div>
+    
+    <div class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <div class="contact-panel" id="contactPanel">
+        <a href="mailto:contact@alnest.lk" class="contact-option" target="_blank" aria-label="Email us">
+            <i class="fas fa-envelope"></i> Email
+        </a>
+        <a href="https://outlook.office.com/mail/deeplink/compose?to=contact@alnest.lk" class="contact-option" target="_blank" aria-label="Contact via Outlook">
+            <i class="fas fa-mail-bulk"></i> Outlook
+        </a>
+        <a href="https://wa.me/+94761681904" class="contact-option" target="_blank" aria-label="Contact via WhatsApp">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+        <a href="tel:+94772764500" class="contact-option" aria-label="Call us">
+            <i class="fas fa-phone"></i> Call
+        </a>
+    </div>
+    
+    <script>
+        // Play pronunciation when page loads
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const audio = document.getElementById('pronunciationAudio');
+            try {
+                audio.play().catch(e => console.log("Auto-play prevented:", e));
+            } catch(e) {
+                console.log("Audio error:", e);
+            }
+            
+            // Create floating particles
+            createParticles();
+            
+            // Animate letters
+            setTimeout(() => {
+                document.querySelectorAll('.letter').forEach((letter, index) => {
+                    setTimeout(() => {
+                        letter.classList.add('animate');
+                    }, index * 100);
+                });
+                
+                document.querySelector('.slogan').classList.add('animate');
+            }, 300);
+            
+            // Animate stats counters
+            animateCounters();
+            
+            // Initialize calendar
+            initializeCalendar();
+        });
+        
+        // Create floating particles for animation
+        function createParticles() {
+            const container = document.querySelector('.animation-container');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 5 + 2;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const opacity = Math.random() * 0.5 + 0.1;
+                const duration = Math.random() * 10 + 10;
+                const delay = Math.random() * 5;
+                
+                // Apply styles
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.opacity = opacity;
+                particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+                
+                container.appendChild(particle);
+            }
+            
+            // Add floating animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float {
+                    0% {
+                        transform: translateY(0) translateX(0);
+                        opacity: ${Math.random() * 0.5 + 0.1};
+                    }
+                    50% {
+                        transform: translateY(-20px) translateX(10px);
+                        opacity: ${Math.random() * 0.8 + 0.2};
+                    }
+                    100% {
+                        transform: translateY(0) translateX(0);
+                        opacity: ${Math.random() * 0.5 + 0.1};
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Fade out animation container and show main content
+        setTimeout(() => {
+            const animation = document.getElementById('animation');
+            const mainContent = document.getElementById('mainContent');
+            animation.classList.add('hidden');
+            mainContent.classList.add('visible');
+            setTimeout(() => {
+                animation.style.display = 'none';
+            }, 800);
+        }, 3000);
+        
+        // Add keyboard support for box elements and contact icon
+        document.querySelectorAll('.box, .contact-icon, .contact-option').forEach(element => {
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    element.click();
+                }
+            });
+        });
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update URL without page reload
+                    history.pushState(null, null, targetId);
+                }
+            });
+        });
+        
+        // Toggle contact panel visibility
+        const contactIcon = document.querySelector('.contact-icon');
+        const contactPanel = document.getElementById('contactPanel');
+        contactIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            contactPanel.classList.toggle('visible');
+        });
+        
+        // Close contact panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!contactIcon.contains(e.target) && !contactPanel.contains(e.target)) {
+                contactPanel.classList.remove('visible');
+            }
+        });
+        
+        // Add hover effects to boxes
+        document.querySelectorAll('.box').forEach(box => {
+            box.addEventListener('mouseenter', () => {
+                box.style.transform = 'translateY(-5px)';
+                box.style.boxShadow = '0 10px 15px rgba(0, 0, 0, 0.1)';
+            });
+            
+            box.addEventListener('mouseleave', () => {
+                box.style.transform = '';
+                box.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.05)';
+            });
+        });
+        
+        // Header scroll effect
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            // Show/hide back to top button
+            const backToTop = document.getElementById('backToTop');
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+        
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Animate counter numbers
+        function animateCounters() {
+            const studentsCount = document.getElementById('studentsCount');
+            const resourcesCount = document.getElementById('resourcesCount');
+            const subjectsCount = document.getElementById('subjectsCount');
+            const successRate = document.getElementById('successRate');
+            
+            const targetStudents = 12500;
+            const targetResources = 850;
+            const targetSubjects = 42;
+            const targetSuccess = 95;
+            
+            let currentStudents = 0;
+            let currentResources = 0;
+            let currentSubjects = 0;
+            let currentSuccess = 0;
+            
+            const duration = 2000; // 2 seconds
+            const interval = 20; // Update every 20ms
+            const steps = duration / interval;
+            
+            const studentsStep = targetStudents / steps;
+            const resourcesStep = targetResources / steps;
+            const subjectsStep = targetSubjects / steps;
+            const successStep = targetSuccess / steps;
+            
+            const counterInterval = setInterval(() => {
+                currentStudents += studentsStep;
+                currentResources += resourcesStep;
+                currentSubjects += subjectsStep;
+                currentSuccess += successStep;
+                
+                if (currentStudents >= targetStudents) {
+                    currentStudents = targetStudents;
+                    currentResources = targetResources;
+                    currentSubjects = targetSubjects;
+                    currentSuccess = targetSuccess;
+                    clearInterval(counterInterval);
+                }
+                
+                studentsCount.textContent = Math.floor(currentStudents).toLocaleString();
+                resourcesCount.textContent = Math.floor(currentResources).toLocaleString();
+                subjectsCount.textContent = Math.floor(currentSubjects);
+                successRate.textContent = Math.floor(currentSuccess) + '%';
+            }, interval);
+        }
+        
+        // Initialize calendar
+        function initializeCalendar() {
+            const calendarTooltip = document.getElementById('calendarTooltip');
+            const updateDateTime = () => {
+                const now = new Date();
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZone: 'Asia/Colombo'
+                };
+                calendarTooltip.textContent = now.toLocaleString('en-US', options);
+            };
+            updateDateTime();
+            setInterval(updateDateTime, 60000); // Update every minute
+        }
+    </script>
+</body>
+</html>
